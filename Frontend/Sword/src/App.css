@@ -1,0 +1,128 @@
+
+
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;600&family=IM+Fell+English:ital@0;1&display=swap');
+
+:root {
+  --gold:       #c9a84c;
+  --gold-bright:#f0cf6e;
+  --gold-dim:   #7a5f28;
+  --ember:      #ff5e1a;
+  --steel:      #8aa3b8;
+  --dark:       #06080d;
+  --dark2:      #0d1220;
+  --dark3:      #141b2e;
+  --rune:       #4af3ff;
+  --rune-dim:   rgba(74, 243, 255, 0.15);
+}
+
+body {
+  background: var(--dark);
+  color: #e8dfc8;
+  font-family: 'Cinzel', serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── Fundo animado ── */
+.bg-forge {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse 60% 80% at 50% 110%, rgba(200,80,10,0.18) 0%, transparent 70%),
+    radial-gradient(ellipse 80% 60% at 50% -10%,  rgba(74,243,255,0.06) 0%, transparent 60%),
+    linear-gradient(180deg, #06080d 0%, #0a1018 50%, #0d0807 100%);
+}
+
+/* ── Grid decorativo ── */
+.grid-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background-image:
+    linear-gradient(rgba(201,168,76,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(201,168,76,0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+}
+
+/* ── Faíscas ── */
+.sparks {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.spark {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  border-radius: 50%;
+  background: var(--gold-bright);
+  animation: sparkFloat var(--dur) ease-in infinite;
+  animation-delay: var(--delay);
+  left: var(--x);
+  bottom: -10px;
+  opacity: 0;
+}
+
+@keyframes sparkFloat {
+  0%   { transform: translateY(0) translateX(0); opacity: 1; }
+  50%  { opacity: 0.8; }
+  100% { transform: translateY(-60vh) translateX(calc(var(--drift) * 60px)); opacity: 0; }
+}
+
+/* ── Layout principal ── */
+.mint-section {
+  position: relative;
+  z-index: 10;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px 40px;
+}
+
+.mint-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  max-width: 1100px;
+  width: 100%;
+  align-items: center;
+}
+
+/* ── Divisor ── */
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--gold-dim);
+  font-size: 14px;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+}
+
+.divider::before { background: linear-gradient(90deg,  transparent, var(--gold-dim)); }
+.divider::after  { background: linear-gradient(270deg, transparent, var(--gold-dim)); }
+
+/* ── Confetti burst ── */
+@keyframes burst {
+  from { opacity: 1; transform: rotate(var(--r, 0deg)) translateX(0); }
+  to   { opacity: 0; transform: rotate(var(--r, 0deg)) translateX(200px); }
+}
+
+/* ── Responsivo ── */
+@media (max-width: 800px) {
+  .mint-container {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+}

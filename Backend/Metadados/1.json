@@ -1,0 +1,20 @@
+{
+    "name": "Lâmina Alada Divina",
+    "description": "Espada larga de dois gumes com uma guarda-mão em forma de asas abertas. Dizem ser abençoada para combater as trevas.",
+    "image": "ipfs://bafybeig4fktzrw6rj4obntk7s2tmtokhurwxnd5nyaiopddxeibiaafrde/1.png",
+    "idToken": 1,
+    "attributes": [
+        {
+            "trait_type": "Tipo",
+            "value": "Espada Montante"
+        },
+        {
+            "trait_type": "Raridade",
+            "value": "Lendário"
+        },
+        {
+            "trait_type": "Elemento",
+            "value": "Luz"
+        }
+    ]
+}

@@ -1,0 +1,20 @@
+{
+    "name": "Cimitarra do Dragão",
+    "description": "Uma cimitarra letal com punho de couro escuro e pomo forjado em formato de cabeça de dragão. Ideal para golpes rápidos e precisos.",
+    "image": "ipfs://bafybeig4fktzrw6rj4obntk7s2tmtokhurwxnd5nyaiopddxeibiaafrde/0.png",
+    "idToken": 0,
+    "attributes": [
+        {
+            "trait_type": "Tipo",
+            "value": "Espada de Uma Mão"
+        },
+        {
+            "trait_type": "Raridade",
+            "value": "Raro"
+        },
+        {
+            "trait_type": "Material",
+            "value": "Aço Escuro"
+        }
+    ]
+}

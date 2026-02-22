@@ -1,0 +1,57 @@
+
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+  width: 100%;
+  height: 100%;
+}
+
+
+body {
+  display: block !important;
+  width: 100%;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  background: #06080d;
+  color: #e8dfc8;
+  overflow-x: hidden;
+}
+
+
+#root {
+  max-width: none !important;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  text-align: left !important;
+}
+
+
+button {
+  all: unset;
+  cursor: pointer;
+}
+
+h1, h2, h3 {
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
