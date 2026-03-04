@@ -10,7 +10,7 @@ function Header() {
             
             setWallet(resultado.account); 
         } catch (error) {
-            console.error("Erro ao conectar:", error);
+            console.error("Error connecting:", error);
         }
     }
 
@@ -30,7 +30,7 @@ function Header() {
             boxSizing: 'border-box'
         }}>
             <div style={{ color: '#f0cf6e', fontSize: '1.5rem', fontWeight: 'bold', fontFamily: 'serif' }}>
-                ⚔️ Forja NFT
+                ⚔️ Forge NFT
             </div>
 
             <div>
@@ -43,7 +43,7 @@ function Header() {
                         onClick={handleConnect}
                         style={{ background: 'transparent', color: '#f0cf6e', border: '1px solid #f0cf6e', padding: '0.5rem 1rem', cursor: 'pointer', fontFamily: 'serif' }}
                     >
-                        Conectar MetaMask
+                        Connect MetaMask
                     </button>
                 )}
             </div>

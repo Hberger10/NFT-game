@@ -40,9 +40,24 @@ function getContract(web3?: Web3) {
     if (!web3) web3 = getWeb3();
     return new web3.eth.Contract(abi, contractAddress);
 }
+export async  function mint(): Promise<string> {
+    const web3 = getWeb3();
+    const contract = getContract(web3);
+    const accounts = await web3.eth.requestAccounts();
+    const price = web3.utils.toWei("0.01", 'ether');
+    const tx = await contract.methods.forgeItem().send({ from: accounts[0], value: price });
+    return tx.transactionHash;
 
+}
 
-
+export async function getBalance(account: string): Promise<number> {
+    const web3 = getWeb3();
+    const contract = getContract(web3);
+    
+    const balance = await contract.methods.balanceOf(account).call();
+    
+    return Number(balance);
+}
 
     
     
