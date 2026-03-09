@@ -1,14 +1,23 @@
 import { useState } from 'react';
 import { Login } from './Web3Service';
 
-function Header() {
+
+interface HeaderProps {
+  onLoginSuccess: () => void;
+}
+
+
+export default function Header({ onLoginSuccess }: HeaderProps) {
     const [wallet, setWallet] = useState<string>("");
 
     async function handleConnect() {
         try {
             const resultado = await Login();
-            
             setWallet(resultado.account); 
+            
+            
+            onLoginSuccess(); 
+            
         } catch (error) {
             console.error("Error connecting:", error);
         }
@@ -50,5 +59,3 @@ function Header() {
         </header>
     );
 }
-
-export default Header;

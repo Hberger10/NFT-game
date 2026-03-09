@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, use } from 'react'
 import './App.css'
 import './mint.css'
 import Header from './header'
@@ -8,10 +8,11 @@ import {BronzeSword, SilverSword, GoldSword} from './Swords'
 
 
 
+
+
 interface MintResult {
   txHash: string
 }
-
 
 
 
@@ -49,6 +50,45 @@ function App() {
     return () => { container.innerHTML = '' }
   }, [])
 
+  useEffect(() => {
+    const cachedAccount = localStorage.getItem("account");
+    if (cachedAccount) {
+      getBalance(cachedAccount).then(setBalance).catch(console.error);
+    }
+
+    
+    const handleAccountsChanged = (accounts: string[]) => {
+      if (accounts.length > 0) {
+        const newAccount = accounts[0];
+        localStorage.setItem("account", newAccount); 
+        getBalance(newAccount).then(setBalance).catch(console.error);
+      } else {
+        
+        localStorage.removeItem("account");
+        setBalance(0); 
+      }
+    };
+
+    if (window.ethereum) {
+      window.ethereum.on('accountsChanged', handleAccountsChanged);
+    }
+
+    
+    return () => {
+      if (window.ethereum) {
+        window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
+      }
+    };
+  }, []); 
+
+  function readSwordAfterLogin(){
+    const cachedAccount = localStorage.getItem("account");
+    if (cachedAccount) {
+      getBalance(cachedAccount).then(setBalance).catch(console.error);
+    }
+    
+  }
+
  
 
   function changeQty(delta: number) {
@@ -61,9 +101,8 @@ function App() {
     try {
       
       await mint()
-     
-
       fireConfetti()
+      getBalance(localStorage.getItem("account") || "").then(setBalance)
     } catch (err) {
       alert('Mint failed. Please try again.')
       console.error('Mint failed:', err)
@@ -104,7 +143,7 @@ function App() {
 
     
     <div className="App">
-      <Header />
+      <Header onLoginSuccess={readSwordAfterLogin} />
       
 
       <div className="bg-forge" />
@@ -114,7 +153,7 @@ function App() {
       <section className="mint-section">
         <div className="mint-container">
 
-          {/* ── Sword ── */}
+          
           <div className="sword-display">
             <div className="sword-frame">
               <div className="corner corner-tl" />
@@ -124,7 +163,9 @@ function App() {
               <div className="rune-ring" />
               <div className="glow-aura" />
               <div className="sword-svg-wrap">
-                <GoldSword />
+                {balance === 0 && <BronzeSword />}
+                {balance === 1 && <SilverSword />}
+                {balance >= 2 && <GoldSword />}
               </div>
             </div>
 
@@ -145,7 +186,7 @@ function App() {
             </div>
           </div>
 
-          {/* ── Painel de mint ── */}
+          
           <div className="mint-panel">
             
             
