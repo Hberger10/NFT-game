@@ -12,6 +12,7 @@ contract EspadaNft is ERC721, ERC721Enumerable, ERC721Burnable, Ownable {
     uint256 public constant MINT_PRICE = 0.01 ether;
 
     event ItemForged(address indexed owner, uint256 indexed tokenId);
+    mapping (uint256 => uint256) private _tokenLevels;
 
     
     constructor() ERC721("EspadaNFT", "ESPADA") Ownable(msg.sender) {}
@@ -43,6 +44,9 @@ contract EspadaNft is ERC721, ERC721Enumerable, ERC721Burnable, Ownable {
 
         uint256 tokenId = _tokenIdCounter;
         _tokenIdCounter++;
+
+        _tokenLevels[tokenId] = balance;
+        
         
         _safeMint(msg.sender, tokenId);
         emit ItemForged(msg.sender, tokenId);
@@ -83,7 +87,8 @@ contract EspadaNft is ERC721, ERC721Enumerable, ERC721Burnable, Ownable {
     {
         _requireOwned(tokenId);
         string memory base = _baseURI();
-        return string.concat(base, Strings.toString(tokenId), ".json");
+        uint256 level = _tokenLevels[tokenId];
+        return string.concat(base, Strings.toString(level), ".json");
     }
 
     function supportsInterface(bytes4 interfaceId)

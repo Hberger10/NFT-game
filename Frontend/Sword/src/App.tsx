@@ -1,11 +1,48 @@
-import { useState, useEffect, useRef, use } from 'react'
+import { useState, useEffect, useRef, use, type JSX } from 'react'
 import './App.css'
 import './mint.css'
 import Header from './header'
 import { mint,getBalance } from './Web3Service'
 import {BronzeSword, SilverSword, GoldSword} from './Swords'
 
+const SWORD_DATA: Record<number, MetaData> = {
+  0: {
+    name: "Bronze Shortsword",
+    description: "A solid bronze shortsword, ideal for your first battles. Its weight demands strength, but the blade is reliable.",
+    attributes: [
+      { label: 'Strength', value: '25', pct: 25 },
+      { label: 'Magic', value: '10', pct: 10 }
+    ],
+    styleSword: <BronzeSword />
+  },
+  1: {
+    name: "Silver Longsword",
+    description: "Forged with pure silver and engraved with ancient runes. An agile and lethal blade that reacts to the presence of magic.",
+    attributes: [
+      { label: 'Strength', value: '60', pct: 60 },
+      { label: 'Magic', value: '40', pct: 40 }
+    ],
+    styleSword: <SilverSword />
+  },
+  2: {
+    name: "Gold Greatsword",
+    description: "A magnificent golden greatsword, forged by the finest blacksmiths. Its immense weight and sharp edge make it a formidable weapon.",
+    attributes: [
+      { label: 'Strength', value: '90', pct: 90 },
+      { label: 'Magic', value: '80', pct: 80 }
+    ],
+    styleSword: <GoldSword />
+  }
+}
 
+
+
+interface MetaData {
+  name: string;
+  description: string;
+  attributes: { label: string; value: string; pct: number }[]; 
+  styleSword: JSX.Element; 
+}
 
 
 
@@ -28,8 +65,12 @@ function App() {
   const [quantity, setQuantity] = useState<number>(1)
   const [loading, setLoading]   = useState<boolean>(false)
   const [result, setResult]     = useState<MintResult | null>(null)
+  const [error, setError]       = useState<string | null>(null)
   const [balance, setBalance]   = useState<number>(0)
   const sparksRef               = useRef<HTMLDivElement>(null)
+
+  const currentLevel = Math.min(2, balance);
+  const activeSword = SWORD_DATA[currentLevel];
   
 
   
@@ -103,9 +144,11 @@ function App() {
       await mint()
       fireConfetti()
       getBalance(localStorage.getItem("account") || "").then(setBalance)
+      setResult({ txHash: result?.txHash || '0x1234...abcd' })
     } catch (err) {
       alert('Mint failed. Please try again.')
-      console.error('Mint failed:', err)
+      setError('Mint failed. Please try again.',)
+      
     } finally {
       setLoading(false)
     }
@@ -163,18 +206,12 @@ function App() {
               <div className="rune-ring" />
               <div className="glow-aura" />
               <div className="sword-svg-wrap">
-                {balance === 0 && <BronzeSword />}
-                {balance === 1 && <SilverSword />}
-                {balance >= 2 && <GoldSword />}
+                {activeSword.styleSword}
               </div>
             </div>
 
             <div className="sword-attrs">
-              {[
-                { label: 'Strength',    value: '87',  pct: 87 },
-                { label: 'Magic',    value: '94',  pct: 94 },
-                { label: 'Rarity', value: '★★★', pct: 75 },
-              ].map(attr => (
+              {activeSword.attributes.map(attr => (
                 <div className="attr" key={attr.label}>
                   <div className="attr-label">{attr.label}</div>
                   <div className="attr-value">{attr.value}</div>
@@ -192,10 +229,10 @@ function App() {
             
 
             <div className="mint-title-wrap">
-              <div className="eyebrow">✦ Dragon's Scimitar</div>
-              <h1 className="mint-title">Everlasting <br />Rune Blade</h1>
+              <div className="eyebrow">✦ {activeSword.name}</div>
+              <h1 className="mint-title">{activeSword.name}</h1>
               <p className="mint-subtitle">
-                A deadly scimitar featuring a dark leather-wrapped hilt and a dragon-head pommel. Perfect for swift, surgical strikes.
+                {activeSword.description}
               </p>
               <div className="rarity">
                 <div className="rarity-dot" />
@@ -242,9 +279,9 @@ function App() {
             {result && (
               <div className="mint-success">
                 <div className="success-icon">⚔️</div>
-                <div className="success-title">Espada Forjada!</div>
+                <div className="success-title">Sword Forged!</div>
                 <p className="success-sub">
-                  Your Everlasting Rune Blade has been forged successfully.
+                  Your {activeSword.name} Rune Blade has been forged successfully.
                   May it guide your path, warrior.
                 </p>
                 <div className="tx-hash">TX: {result.txHash}</div>
