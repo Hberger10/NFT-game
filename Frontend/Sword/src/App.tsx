@@ -5,8 +5,15 @@ import Header from './header'
 import { mint,getBalance } from './Web3Service'
 import {BronzeSword, SilverSword, GoldSword} from './Swords'
 
-const SWORD_DATA: Record<number, MetaData> = {
-  0: {
+enum SwordLevel {
+  Bronze=0,
+  Silver=1,
+  Gold=2
+} 
+
+const SWORD_DATA: Record<SwordLevel, MetaData> = {
+
+  [SwordLevel.Bronze]: {
     name: "Bronze Shortsword",
     description: "A solid bronze shortsword, ideal for your first battles. Its weight demands strength, but the blade is reliable.",
     attributes: [
@@ -15,7 +22,7 @@ const SWORD_DATA: Record<number, MetaData> = {
     ],
     styleSword: <BronzeSword />
   },
-  1: {
+  [SwordLevel.Silver]: {
     name: "Silver Longsword",
     description: "Forged with pure silver and engraved with ancient runes. An agile and lethal blade that reacts to the presence of magic.",
     attributes: [
@@ -24,7 +31,7 @@ const SWORD_DATA: Record<number, MetaData> = {
     ],
     styleSword: <SilverSword />
   },
-  2: {
+  [SwordLevel.Gold]: {
     name: "Gold Greatsword",
     description: "A magnificent golden greatsword, forged by the finest blacksmiths. Its immense weight and sharp edge make it a formidable weapon.",
     attributes: [
@@ -34,7 +41,9 @@ const SWORD_DATA: Record<number, MetaData> = {
     styleSword: <GoldSword />
   }
 }
-
+  
+  
+  
 
 
 interface MetaData {
@@ -70,7 +79,7 @@ function App() {
   const sparksRef               = useRef<HTMLDivElement>(null)
 
   const currentLevel = Math.min(2, balance);
-  const activeSword = SWORD_DATA[currentLevel];
+  const activeSword = SWORD_DATA[currentLevel as SwordLevel];
   
 
   
