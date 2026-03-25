@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, use, type JSX } from 'react'
+import { useState, useEffect, useRef,  type JSX } from 'react'
 import './App.css'
 import './mint.css'
 import Header from './header'
@@ -62,7 +62,7 @@ interface MintResult {
 
 
 
-const PRICE_PER_UNIT = 0.08
+const PRICE_PER_UNIT = 0.01
 const MAX_PER_WALLET = 3
 
 
@@ -148,15 +148,17 @@ function App() {
   
   async function handleMint() {
     setLoading(true)
+    setError(null)
     try {
       
-      await mint()
+      const hash = await mint()
+      
       fireConfetti()
       getBalance(localStorage.getItem("account") || "").then(setBalance)
-      setResult({ txHash: result?.txHash || '0x1234...abcd' })
+      setResult({ txHash: hash })
     } catch (err) {
-      alert('Mint failed. Please try again.')
-      setError('Mint failed. Please try again.',)
+      
+      setError('Mint failed. Please try again.')
       
     } finally {
       setLoading(false)
@@ -265,36 +267,57 @@ function App() {
 
             <div className="divider">⚔</div>
 
-            <div className="quantity-section">
-              <label>Quantity</label>
-              <div className="quantity-control">
-                <button className="qty-btn" onClick={() => changeQty(-1)}>−</button>
-                <input className="qty-display" type="number" value={quantity} readOnly />
-                <button className="qty-btn" onClick={() => changeQty(1)}>+</button>
-              </div>
-              <p className="qty-total">Total: <strong>{total} ETH</strong></p>
-            </div>
-
-            {!result && (
-              <button className="mint-btn" onClick={handleMint} disabled={loading}>
-                <div className="mint-btn-inner">
-                  <span className="btn-icon">⚒</span>
-                  <span>{loading ? 'Forging...' : 'Forge NFT'}</span>
-                  {loading && <div className="spinner" />}
-                </div>
-              </button>
-            )}
-
-            {result && (
-              <div className="mint-success">
-                <div className="success-icon">⚔️</div>
-                <div className="success-title">Sword Forged!</div>
+            {balance >= MAX_PER_WALLET ? (
+              <div className="mint-success" style={{ marginTop: '20px' }}>
+                <div className="success-icon">👑</div>
+                <div className="success-title">Arsenal Complete!</div>
                 <p className="success-sub">
-                  Your {activeSword.name} Rune Blade has been forged successfully.
-                  May it guide your path, warrior.
+                  You have already forged all {MAX_PER_WALLET} legendary swords. 
+                  There is nothing left to forge, Master.
                 </p>
-                <div className="tx-hash">TX: {result.txHash}</div>
               </div>
+            ) : (
+              
+              <>
+                <div className="quantity-section">
+                  <label>Quantity</label>
+                  <div className="quantity-control">
+                    <button className="qty-btn" onClick={() => changeQty(-1)}>−</button>
+                    <input className="qty-display" type="number" value={quantity} readOnly />
+                    <button className="qty-btn" onClick={() => changeQty(1)}>+</button>
+                  </div>
+                  <p className="qty-total">Total: <strong>{total} ETH</strong></p>
+                </div>
+
+                {!result && (
+                  <button className="mint-btn" onClick={handleMint} disabled={loading}>
+                    <div className="mint-btn-inner">
+                      <span className="btn-icon">⚒</span>
+                      <span>{loading ? 'Forging...' : 'Forge NFT'}</span>
+                      {loading && <div className="spinner" />}
+                    </div>
+                  </button>
+                )}
+
+                {result && (
+                  <div className="mint-success">
+                    <div className="success-icon">⚔️</div>
+                    <div className="success-title">Sword Forged!</div>
+                    <p className="success-sub">
+                      Your {activeSword.name} Rune Blade has been forged successfully.
+                      May it guide your path, warrior.
+                    </p>
+                    <div className="tx-hash">TX: {result.txHash}</div>
+                  </div>
+                )}
+
+                {error && (
+                  <div className="mint-error" style={{ color: '#ff4a4a', marginTop: '15px', textAlign: 'center' }}>
+                    ⚠️ {error}
+                  </div>
+                )}
+              </>
+              
             )}
 
           </div>
