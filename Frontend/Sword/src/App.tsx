@@ -1,18 +1,17 @@
-import { useState, useEffect, useRef,  type JSX } from 'react'
+import { useState, useEffect, useRef, type JSX } from 'react'
 import './App.css'
 import './mint.css'
 import Header from './header'
-import { mint,getBalance } from './Web3Service'
-import {BronzeSword, SilverSword, GoldSword} from './Swords'
+import { mint, getBalance } from './Web3Service'
+import { BronzeSword, SilverSword, GoldSword } from './Swords'
 
 enum SwordLevel {
-  Bronze=0,
-  Silver=1,
-  Gold=2
+  Bronze = 0,
+  Silver = 1,
+  Gold = 2
 } 
 
 const SWORD_DATA: Record<SwordLevel, MetaData> = {
-
   [SwordLevel.Bronze]: {
     name: "Bronze Shortsword",
     description: "A solid bronze shortsword, ideal for your first battles. Its weight demands strength, but the blade is reliable.",
@@ -41,10 +40,6 @@ const SWORD_DATA: Record<SwordLevel, MetaData> = {
     styleSword: <GoldSword />
   }
 }
-  
-  
-  
-
 
 interface MetaData {
   name: string;
@@ -53,35 +48,25 @@ interface MetaData {
   styleSword: JSX.Element; 
 }
 
-
-
-
 interface MintResult {
   txHash: string
 }
 
-
-
 const PRICE_PER_UNIT = 0.01
 const MAX_PER_WALLET = 3
 
-
-
-
-
 function App() {
-  
   const [quantity, setQuantity] = useState<number>(1)
   const [loading, setLoading]   = useState<boolean>(false)
   const [result, setResult]     = useState<MintResult | null>(null)
   const [error, setError]       = useState<string | null>(null)
   const [balance, setBalance]   = useState<number>(0)
+  const [account, setAccount]   = useState<string | null>(null)
   const sparksRef               = useRef<HTMLDivElement>(null)
 
   const currentLevel = Math.min(2, balance);
   const activeSword = SWORD_DATA[currentLevel as SwordLevel];
   
-
   
   useEffect(() => {
     const container = sparksRef.current
@@ -100,21 +85,23 @@ function App() {
     return () => { container.innerHTML = '' }
   }, [])
 
+  
   useEffect(() => {
     const cachedAccount = localStorage.getItem("account");
     if (cachedAccount) {
+      setAccount(cachedAccount);
       getBalance(cachedAccount).then(setBalance).catch(console.error);
     }
 
-    
     const handleAccountsChanged = (accounts: string[]) => {
       if (accounts.length > 0) {
         const newAccount = accounts[0];
         localStorage.setItem("account", newAccount); 
+        setAccount(newAccount);
         getBalance(newAccount).then(setBalance).catch(console.error);
       } else {
-        
         localStorage.removeItem("account");
+        setAccount(null);
         setBalance(0); 
       }
     };
@@ -123,7 +110,6 @@ function App() {
       window.ethereum.on('accountsChanged', handleAccountsChanged);
     }
 
-    
     return () => {
       if (window.ethereum) {
         window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
@@ -131,35 +117,32 @@ function App() {
     };
   }, []); 
 
-  function readSwordAfterLogin(){
-    const cachedAccount = localStorage.getItem("account");
-    if (cachedAccount) {
-      getBalance(cachedAccount).then(setBalance).catch(console.error);
-    }
-    
-  }
-
  
+  function readSwordAfterLogin(newAccount: string) {
+    setAccount(newAccount);
+    localStorage.setItem("account", newAccount);
+    getBalance(newAccount).then(setBalance).catch(console.error);
+  }
 
   function changeQty(delta: number) {
     setQuantity(prev => Math.max(1, Math.min(MAX_PER_WALLET, prev + delta)))
   }
 
-  
   async function handleMint() {
     setLoading(true)
     setError(null)
     try {
-      
       const hash = await mint()
-      
       fireConfetti()
-      getBalance(localStorage.getItem("account") || "").then(setBalance)
+      
+      const currentAcc = localStorage.getItem("account") || account || "";
+      if(currentAcc) {
+          getBalance(currentAcc).then(setBalance)
+      }
+      
       setResult({ txHash: hash })
     } catch (err) {
-      
       setError('Mint failed. Please try again.')
-      
     } finally {
       setLoading(false)
     }
@@ -187,26 +170,19 @@ function App() {
     }
   }
 
-
-  const total    = (PRICE_PER_UNIT * quantity).toFixed(2)
-  
-
-  
+  const total = (PRICE_PER_UNIT * quantity).toFixed(2)
 
   return (
-
-    
     <div className="App">
-      <Header onLoginSuccess={readSwordAfterLogin} />
       
-
+      <Header account={account} onLoginSuccess={readSwordAfterLogin} />
+      
       <div className="bg-forge" />
       <div className="grid-overlay" />
       <div className="sparks" ref={sparksRef} />
 
       <section className="mint-section">
         <div className="mint-container">
-
           
           <div className="sword-display">
             <div className="sword-frame">
@@ -234,11 +210,7 @@ function App() {
             </div>
           </div>
 
-          
           <div className="mint-panel">
-            
-            
-
             <div className="mint-title-wrap">
               <div className="eyebrow">✦ {activeSword.name}</div>
               <h1 className="mint-title">{activeSword.name}</h1>
@@ -262,9 +234,6 @@ function App() {
               </div>
             </div>
 
-
-            
-
             <div className="divider">⚔</div>
 
             {balance >= MAX_PER_WALLET ? (
@@ -277,7 +246,6 @@ function App() {
                 </p>
               </div>
             ) : (
-              
               <>
                 <div className="quantity-section">
                   <label>Quantity</label>
@@ -317,9 +285,7 @@ function App() {
                   </div>
                 )}
               </>
-              
             )}
-
           </div>
         </div>
       </section>

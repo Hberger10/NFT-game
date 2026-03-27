@@ -1,23 +1,17 @@
-import { useState } from 'react';
 import { Login } from './Web3Service';
 
-
 interface HeaderProps {
-  onLoginSuccess: () => void;
+  account: string | null;
+  onLoginSuccess: (newAccount: string) => void;
 }
 
-
-export default function Header({ onLoginSuccess }: HeaderProps) {
-    const [wallet, setWallet] = useState<string>("");
-
+export default function Header({ account, onLoginSuccess }: HeaderProps) {
+    
     async function handleConnect() {
         try {
             const resultado = await Login();
-            setWallet(resultado.account); 
             
-            
-            onLoginSuccess(); 
-            
+            onLoginSuccess(resultado.account); 
         } catch (error) {
             console.error("Error connecting:", error);
         }
@@ -34,7 +28,7 @@ export default function Header({ onLoginSuccess }: HeaderProps) {
             display: 'flex', 
             justifyContent: 'space-between', 
             alignItems: 'center', 
-            background: 'rgba(0,0,0,0.8)', 
+            background: 'rgba(1, 6, 8, 0.8)', 
             borderBottom: '1px solid #4af3ff',
             boxSizing: 'border-box'
         }}>
@@ -43,9 +37,10 @@ export default function Header({ onLoginSuccess }: HeaderProps) {
             </div>
 
             <div>
-                {wallet ? (
+                
+                {account ? (
                     <span style={{ color: '#4af3ff', border: '1px solid #4af3ff', padding: '0.5rem 1rem', borderRadius: '4px' }}>
-                        {wallet.substring(0, 6)}...{wallet.substring(38)}
+                        {account.substring(0, 6)}...{account.substring(38)}
                     </span>
                 ) : (
                     <button 
